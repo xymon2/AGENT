@@ -1,9 +1,7 @@
 from langchain_openai import OpenAIEmbeddings, AzureOpenAIEmbeddings
 
 class OpenAIEmbBuilder:
-    def __init__(self, model_type: str api_key: str = None):
-        api_key = ""
-
+    def __init__(self, model_type: str = "openai", model_name="text-embedding-3-large", api_key: str = None):
         if model_type == "openai":
             self.embeddings = OpenAIEmbeddings(
                 model="text-embedding-3-large",

@@ -16,6 +16,9 @@ class FaissBuilder():
             
         self.local_index_path = local_index_path
     
+    def get_model(self):
+        return self.vector_store
+    
     def retrieve(self, query, k=5):
         retriever = self.vector_store.as_retriever(search_kwargs={"k": k})
         return retriever.invoke(query)
@@ -26,11 +29,11 @@ class FaissBuilder():
 if __name__ == "__main__":
     print("load document and save faiss index")
     faiss_idx_path = "agent/server/vectorstores/faiss_index"
-    emb = OpenAIEmbProvider("openai").get_model()
+    emb = OpenAIEmbBuilder("openai").get_model()
 
     print("loading document...")
     documents = load_all_pdf_knowledges("agent/server/knowledges/*")
-    faiss = FaissProvider(embeddings = emb, documents = documents, local_index_path=faiss_idx_path)
+    faiss = FaissBuilder(embeddings = emb, documents = documents, local_index_path=faiss_idx_path)
 
     print("saving faiss index...")
     faiss.save_local()
