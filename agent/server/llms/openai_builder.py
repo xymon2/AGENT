@@ -1,6 +1,6 @@
 from langchain_openai import OpenAI, OpenAIEmbeddings, AzureOpenAI, AzureOpenAIEmbeddings
 
-class OpenAILLMProvider:
+class OpenAILLMBuilder:
     def __init__(self, model_type: str, api_key: str = None):
         api_key = ""
 

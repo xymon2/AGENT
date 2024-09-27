@@ -1,9 +1,9 @@
 import faiss
 from langchain_community.vectorstores import FAISS
-from agent.server.embeddings import OpenAIEmbProvider
+from agent.server.embeddings import OpenAIEmbBuilder
 from agent.server.knowledges import load_all_pdf_knowledges
 
-class FaissProvider():
+class FaissBuilder():
     def __init__(self, embeddings, documents = None, local_index_path=None):
         if documents is not None and local_index_path is not None:
             # only documents init
