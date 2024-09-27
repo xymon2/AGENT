@@ -1,1 +1,1 @@
-from .openai_provider import OpenAILLMProvider
+from .openai_builder import OpenAILLMBuilder

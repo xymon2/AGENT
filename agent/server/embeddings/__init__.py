@@ -1,1 +1,1 @@
-from .openai_provider import OpenAIEmbProvider
+from .openai_builder import OpenAIEmbBuilder
