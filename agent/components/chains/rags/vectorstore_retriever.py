@@ -1,6 +1,6 @@
-from agent.server.embeddings import OpenAIEmbBuilder
-from agent.server.llms import OpenAILLMBuilder
-from agent.server.vectorstores import FaissBuilder
+from agent.components.embeddings import OpenAIEmbBuilder
+from agent.components.llms import OpenAILLMBuilder
+from agent.components.vectorstores import FaissBuilder
 
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
