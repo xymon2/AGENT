@@ -3,6 +3,8 @@ from langchain_community.vectorstores import FAISS
 from agent.components.embeddings import OpenAIEmbBuilder
 from agent.components.knowledges import load_all_pdf_knowledges
 
+from agent.config import config
+
 class FaissBuilder():
     def __init__(self, embeddings, documents = None, local_index_path=None):
         if documents is not None and local_index_path is not None:
@@ -27,12 +29,15 @@ class FaissBuilder():
         self.vector_store.save_local(self.local_index_path)
 
 if __name__ == "__main__":
-    print("load document and save faiss index")
-    faiss_idx_path = "agent/server/vectorstores/faiss_index"
+
+    print("load documents and save them as faiss index")
+    faiss_idx_path = config.get_faiss_idx_path()
     emb = OpenAIEmbBuilder("openai").get_model()
 
-    print("loading document...")
-    documents = load_all_pdf_knowledges("agent/server/knowledges/*")
+    print("loading pdf knowledges...")
+    knowledge_pdf_path = config.get_knowledge_pdf_path()
+    documents = load_all_pdf_knowledges(knowledge_pdf_path)
+
     faiss = FaissBuilder(embeddings = emb, documents = documents, local_index_path=faiss_idx_path)
 
     print("saving faiss index...")

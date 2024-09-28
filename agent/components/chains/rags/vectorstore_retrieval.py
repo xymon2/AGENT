@@ -5,6 +5,9 @@ from agent.components.vectorstores import FaissBuilder
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
+
+from agent.config import config
+
 class VectorStoreRetriever():
     def __init__(self, llm = None, vector_store = None, prompt = None, top_k=5):
         if llm is None:
@@ -38,7 +41,8 @@ def make_mydata_ragchain():
     llm_model_name ="gpt-4"
     llm_temperature = 0
 
-    openai_key = ""
+    openai_key = config.get_openai_api_key()
+    faiss_idx_path = config.get_faiss_idx_path()
 
     llm = OpenAILLMBuilder(
         model_type=llm_model_type,
@@ -54,7 +58,7 @@ def make_mydata_ragchain():
     vector_store = FaissBuilder(
         embeddings = emb,
         documents = None,
-        local_index_path="agent/components/vectorstores/faiss_index"
+        local_index_path=faiss_idx_path
     )
 
     prompt = ChatPromptTemplate.from_template('''
