@@ -54,7 +54,7 @@ def make_mydata_ragchain():
     vector_store = FaissBuilder(
         embeddings = emb,
         documents = None,
-        local_index_path="agent/server/vectorstores/faiss_index"
+        local_index_path="agent/components/vectorstores/faiss_index"
     )
 
     prompt = ChatPromptTemplate.from_template('''
