@@ -36,9 +36,9 @@ def get_response():
             table.update({'loading': True}, Session.session_id == session_id)
 
             with st.spinner("AI 에이전트가 답변을 생성 중입니다. 잠시만 기다려주세요..."):
-                response = test_response(query)
+                # response = test_response(query)
                 # 가장최근 5개의 대화를 사용해서 답변을 생성합니다.
-                # response = mydata_agent.get_response(query, chat_history[-5:])
+                response = mydata_agent.get_response(query, chat_history[-5:])
 
                 chat_history.append({"role": "user", "content": query})
                 chat_history.append({"role": "agent", "content": response})
