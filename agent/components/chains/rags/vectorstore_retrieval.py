@@ -41,19 +41,19 @@ def make_mydata_ragchain():
     llm_model_name ="gpt-4"
     llm_temperature = 0
 
-    openai_key = config.get_openai_api_key()
+    openai_keys = config.get_openai_api_keys()
     faiss_idx_path = config.get_faiss_idx_path()
 
     llm = OpenAILLMBuilder(
         model_type=llm_model_type,
         model_name=llm_model_name,
         temperature=llm_temperature,
-        api_key = openai_key,
+        api_keys = openai_keys,
     ).get_model()
 
     emb_model_type = "openai"
     emb_model_name = "text-embedding-3-large"
-    emb = OpenAIEmbBuilder(model_type=emb_model_type, model_name=emb_model_name,api_key=openai_key).get_model()
+    emb = OpenAIEmbBuilder(model_type=emb_model_type, model_name=emb_model_name,api_keys=openai_keys).get_model()
 
     vector_store = FaissBuilder(
         embeddings = emb,

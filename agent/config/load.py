@@ -14,12 +14,12 @@ class Config:
         
         load_dotenv(env_file_path)
         
-        self._openai_api_key = os.getenv("OPENAI_API_KEY")
+        self._openai_api_keys = os.getenv("OPENAI_API_KEYS").split(",")
         self._faiss_idx_path = os.getenv("FAISS_IDX_PATH")
         self._knowledge_pdf_path = os.getenv("KNOWLEDGE_PDF_PATH")
     
-    def get_openai_api_key(self):
-        return self._openai_api_key
+    def get_openai_api_keys(self):
+        return self._openai_api_keys
     
     def get_faiss_idx_path(self):
         return self._faiss_idx_path
