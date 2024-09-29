@@ -16,6 +16,7 @@ faiss-cpu = "^1.8.0.post1"
 pypdf = "^5.0.0"
 streamlit = "^1.38.0"
 python-dotenv = "^1.0.1"
+tinydb = "^4.8.0"
 
 
 [build-system]

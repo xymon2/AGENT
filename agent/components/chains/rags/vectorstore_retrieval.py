@@ -30,11 +30,11 @@ class VectorStoreRetriever():
         docs = self.retriever.retrieve(query, k=self.top_k)
         return docs
 
-    def get_response(self, query):
+    def get_response(self, query, chat_history = []):
         retrieved_docs = self.get_documents(query)
         retrieved_text = "\n\n".join([doc.page_content for doc in retrieved_docs])
-        return self.chain.invoke({"knowledge": retrieved_text, "question": query})
-
+        return self.chain.invoke({"knowledge": retrieved_text, "question": query, "chat_history": chat_history})
+    
 
 def make_mydata_ragchain():
     llm_model_type = "openai"
@@ -62,14 +62,26 @@ def make_mydata_ragchain():
     )
 
     prompt = ChatPromptTemplate.from_template('''
-    당신은 마이데이터 관련 전문가입니다. 주어진 데이터베이스(Knowledge) 내에서만 정보를 검색해 답변하세요. 
+    당신은 마이데이터 관련 전문가입니다. 이름은 Ryan입니다.
+    주어진 데이터베이스(Knowledge) 내에서만 정보를 검색해 답변하세요. 
     질문에 답변할 때는 아래 조건을 따르세요:
 
+    1. 인사말이나 간단한 대화는 Knowledge에 의존하지 않고 자연스럽게 답변하세요.
     1. **오직 Knowledge 데이터에만 기반한 답변을 생성**하세요. Knowledge에 없는 정보는 제공하지 마세요.
     2. 여러 개의 Knowledge를 사용해도 됩니다.
     3. **관련 정보가 없을 경우**: 질문에 대한 답을 Knowledge에서 찾을 수 없으면, "관련 정보를 찾을 수 없습니다"라고만 답변하세요.
     4. 답변의 마지막에 더 궁금하신점이 없는지 꼭 물어보세요.
-    5. 마지막에 출처를 명시하세요.
+    5. 마지막에 출처를 명시하할 수 있다면 명시하세요.
+
+
+    ### 이전 대화 기록:
+    {chat_history}
+
+    ### 새로운 질문:
+    {question}
+
+    ### Knowledge:
+    {knowledge}
 
     **질문**: 마이데이터 서비스에서 개인정보는 어떻게 관리되나요?
 
@@ -81,8 +93,7 @@ def make_mydata_ragchain():
 
     **답변**:
     마이데이터 서비스에서는 사용자가 본인의 데이터를 안전하게 보호하고, 제3자와 안전하게 공유할 수 있도록 암호화 기술을 사용합니다. [출처: "마이데이터 서비스는 데이터를 안전하게 보호하기 위해 암호화 기술을 사용합니다."]
-
-    <Knowledge> : {knowledge} <질문>: {question}'''
+    '''
     )
 
     return VectorStoreRetriever(llm, vector_store, prompt, top_k=10)
