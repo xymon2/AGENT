@@ -19,11 +19,14 @@ class VectorStoreRetriever():
         if prompt is None:
             raise ValueError("prompt must be provided")
         
+        self.llm = llm
         self.retriever = vector_store
         self.top_k = top_k
+        self.prompt = prompt
 
         output_parser = StrOutputParser()
-        self.chain = prompt | llm | output_parser
+        llm_model = llm.get_model()
+        self.chain = prompt | llm_model | output_parser
         
 
     def get_documents(self, query):
@@ -31,10 +34,27 @@ class VectorStoreRetriever():
         return docs
 
     def get_response(self, query, chat_history = []):
-        retrieved_docs = self.get_documents(query)
-        retrieved_text = "\n\n".join([doc.page_content for doc in retrieved_docs])
-        return self.chain.invoke({"knowledge": retrieved_text, "question": query, "chat_history": chat_history})
-    
+        # retrieved_docs = self.get_documents(query)
+        # retrieved_text = "\n\n".join([doc.page_content for doc in retrieved_docs])
+        retrieved_text = "dummy text"
+        try:
+            resp = self.chain.invoke({"knowledge": retrieved_text, "question": query, "chat_history": chat_history})
+            return resp
+        except Exception as e:
+            if e.status_code == 429:
+                print(f"Rate limit or insufficient quota error - {e}")
+                self.reset_llm()
+            else:
+                print(f"Unknown error - {e}")
+            return e
+
+    def reset_llm(self):
+        print("recreating llm model")
+        # apply retry
+        self.llm.reset_model()
+        llm_model = self.llm.get_model()
+        output_parser = StrOutputParser()
+        self.chain = self.prompt | llm_model | output_parser
 
 def make_mydata_ragchain():
     llm_model_type = "openai"
@@ -49,7 +69,7 @@ def make_mydata_ragchain():
         model_name=llm_model_name,
         temperature=llm_temperature,
         api_keys = openai_keys,
-    ).get_model()
+    )
 
     emb_model_type = "openai"
     emb_model_name = "text-embedding-3-large"
