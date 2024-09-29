@@ -1,5 +1,9 @@
 ## 실행방법
+config/local.env에 적절한 open ai api key를 추가합니다.
+그후 poetry install 후 다음 커맨드로 실행합니다  
+```
 poetry run streamlit run agent/server/run_streamlit_tiny.py  
+```
 
 ## 멀티턴
 기존 대화기록 최근 5개만 넣음으로써 토큰을 아끼면서 멀티턴 진행을하도록함
