@@ -1,21 +1,29 @@
 import streamlit as st
 import time
+from tinydb import TinyDB, Query
 
 from agent.components.chains.rags import make_mydata_ragchain
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 
 session_id = get_script_run_ctx().session_id
 
-if session_id not in st.session_state:
-    st.session_state[session_id] = {"conversation_history": [], "loading": False}
+db = TinyDB('agent/resources/db/tinydb.json')
+Session = Query()
+table = db.table('chat_sessions')
+
+session_data = table.search(Session.session_id == session_id)
+if not session_data:
+    print("Initializing chat session data")
+    table.insert({"session_id": session_id, "conversation_history": [], "loading": False})
+    session_data = table.search(Session.session_id == session_id)
 
 mydata_agent = make_mydata_ragchain()
 
 st.title("마이데이터 AI Agent")
 query = st.text_input("질문을 입력하세요:", placeholder="예: 개인신용정보 전송에서 즉시전송에 대해 설명해줘", key='user_query')
 
-chat_history = st.session_state[session_id]["conversation_history"]
-print(st.session_state[session_id])
+chat_history = session_data[0]['conversation_history']
+loading = session_data[0]['loading']
 
 def test_response(query):
     time.sleep(5)
@@ -24,8 +32,9 @@ def test_response(query):
 def get_response():
     query = st.session_state["user_query"]
     if query:
-        if not st.session_state[session_id]["loading"]:
-            st.session_state[session_id]["loading"] = True
+        if not loading:
+            table.update({'loading': True}, Session.session_id == session_id)
+
             with st.spinner("AI 에이전트가 답변을 생성 중입니다. 잠시만 기다려주세요..."):
                 response = test_response(query)
                 # 가장최근 5개의 대화를 사용해서 답변을 생성합니다.
@@ -33,16 +42,17 @@ def get_response():
 
                 chat_history.append({"role": "user", "content": query})
                 chat_history.append({"role": "agent", "content": response})
+                table.update({'conversation_history': chat_history}, Session.session_id == session_id)
         
-                st.session_state[session_id]["loading"] = False
-                print(f"done generating response for query: {query}")
+                table.update({'loading': False}, Session.session_id == session_id)
+                print(f"Response generated successfully for query: {query}")
         else:
             st.warning("AI 에이전트가 현재 답변을 생성 중입니다. 잠시만 기다려주세요.")
 
     else:
         st.write("질문을 입력해주세요.")
 
-if st.session_state[session_id]["loading"]:
+if loading:
     st.warning("AI 에이전트가 현재 답변을 생성 중입니다. 잠시만 기다려주세요.")
     time.sleep(3)
     st.rerun()
@@ -50,6 +60,7 @@ if st.session_state[session_id]["loading"]:
 st.button(
     "답변 받기", 
     on_click=get_response, 
+    disabled=loading,
 )
 
 for message in chat_history:

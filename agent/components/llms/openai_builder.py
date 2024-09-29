@@ -1,4 +1,5 @@
 from langchain_openai import ChatOpenAI, OpenAI, OpenAIEmbeddings, AzureOpenAI, AzureOpenAIEmbeddings
+import random
 
 class OpenAILLMBuilder:
     def __init__(
@@ -6,8 +7,11 @@ class OpenAILLMBuilder:
         model_type: str = "openai", 
         model_name:str = "gpt-4", 
         temperature:int=0,
-        api_key: str = None,
+        api_keys: list[str] = [],
     ):
+        idx = random.randint(0, len(api_keys) - 1)
+        api_key = api_keys[idx]
+
         if model_type == "openai":
             # legacy models
             if "gpt-3" in model_name:

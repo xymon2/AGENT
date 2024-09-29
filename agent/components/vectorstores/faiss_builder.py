@@ -32,7 +32,8 @@ if __name__ == "__main__":
 
     print("load documents and save them as faiss index")
     faiss_idx_path = config.get_faiss_idx_path()
-    emb = OpenAIEmbBuilder("openai").get_model()
+    openai_keys = config.get_openai_api_keys()
+    emb = OpenAIEmbBuilder("openai", api_keys = openai_keys).get_model()
 
     print("loading pdf knowledges...")
     knowledge_pdf_path = config.get_knowledge_pdf_path()
